@@ -21,7 +21,7 @@
 |Storage| 50GiB gp2 on Root volume           |
 
 ## Infrastructure
-
+![Infrastructure](infrastructure.png)
 ## Deployment
 ### Setup
 To setup the environment, some packages need to be installed.
