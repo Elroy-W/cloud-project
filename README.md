@@ -36,7 +36,7 @@ To setup the environment, some packages need to be installed.
 | arkade | Marketplace for Openfaas in k8s |
 | faas-cli | CLI to build/delpoy openfaas functions |
 
-Run the following commands for environment setting
+### Run the following commands for environment setting
 
 ```
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -51,47 +51,46 @@ sudo apt-get install -y conntrack
 curl -sL https://cli.openfaas.com | sudo sh
 curl -sLS https://get.arkade.dev | sudo sh
 ```
-Set the hosts
+### Set the hosts
 ```
 vim /etc/hosts
 127.0.0.1 app.shopping-cart.com
 127.0.0.1 db.shopping-cart.com
 127.0.0.1 faas.shopping-cart.com
 ```
-Before deploying the project, the root privilege is required
 
-Start minikube
+### Start minikube (Before deploying the project, the root privilege is required)
 ```angular2html
 sudo -i
 minikube start --kubernetes-version=v1.22.0 HTTP_PROXY=https://minikube.sigs.k8s.io/docs/reference/networking/proxy/ --driver=none
 minikube addons enable ingress  # Start minikube ingress service for nginx
 kubectl get pods -n ingress-nginx # Check status for nginx
 ```
-Deploy Openfass
+### Deploy Openfass
 ```angular2html
 arkade install openfaas --basic-auth-password password123 --set=faasIdler.dryRun=false
 kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode # Check Password
 ```
-Port-forwarding for Openfaas Gateway
+### Port-forwarding for Openfaas Gateway
 ```angular2html
 kubectl port-forward -n openfaas svc/gateway 8080:8080 --address=0.0.0.0 &
 ```
-Deploy Nginx
+### Deploy Nginx
 ```angular2html
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/cloud/deploy.yaml
 ```
-Deploy the project
+### Deploy the project
 ```angular2html
 kubectl apply -f ${REPO_HOME}/mongodb.yml
 kubectl apply -f ${REPO_HOME}/server.yml
 kubectl apply -f ${REPO_HOME}/namespace.yml
 kubectl apply -f ${REPO_HOME}/faas-ingress.yml
 ```
-Port-forwarding for frontend 
+### Port-forwarding for frontend 
 ```angular2html
 kubectl port-forward -n openfaas-fn svc/frontend-service 80:8080 --address=0.0.0.0 &
 ```
-Deploy Openfaas Functions
+### Deploy Openfaas Functions
 ```angular2html
 faas-cli login --username admin --password ${password}
 cd ${REPO_HOME}/faas
