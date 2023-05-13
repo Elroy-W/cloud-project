@@ -3,6 +3,7 @@ from bson.json_util import dumps
 import json
 import os
 import sys
+import redis
 
 script_dir = os.path.dirname(__file__)
 mymodule_dir = os.path.join(script_dir, 'common')
@@ -27,6 +28,8 @@ mongo_client = MongoClient(host=mongodb_service_url,
 mydb = mongo_client['cart']
 mycol = mydb['items']
 
+Pool = redis.ConnectionPool(host='127.0.0.1', port=6379,db=2, max_connections=10)
+conn = redis.Redis(connection_pool=Pool)
 
 def handle(event, context):
     """handle a request to the function
@@ -44,7 +47,7 @@ def handle(event, context):
 
     products = dumps(list(mycol.find(key)))
     mycol.delete_many(key)
-    
+    conn.set(json.loads(products))
     return {
         "statusCode": 200,
         "headers": get_headers(cart_id),

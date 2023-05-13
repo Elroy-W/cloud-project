@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import redis
 
 from pymongo import MongoClient
 
@@ -27,6 +28,9 @@ mongo_client = MongoClient(host=mongodb_service_url,
 
 mydb = mongo_client['cart']
 mycol = mydb['items']
+
+Pool = redis.ConnectionPool(host='127.0.0.1', port=6379,db=4, max_connections=10)
+conn = redis.Redis(connection_pool=Pool)
 
 def handle(event, context):
 
@@ -68,7 +72,7 @@ def handle(event, context):
                 }
             }
     mycol.update_one(key, data, upsert = True)
-
+    conn.set(json.dumps({"productId": product_id, "quantity": quantity, "message": "cart updated"}, default=str))
     return {
             "statusCode": 200,
             "headers": get_headers(cart_id),
